@@ -1,12 +1,14 @@
 {
   "app": {
-    "title": "保健品追蹤",
-    "subtitle": "輕鬆管理你的每日保健"
+    "title": "健康管理",
+    "subtitle": "輕鬆管理你的每日保健與用藥"
   },
   "nav": {
-    "home": "今日打卡",
+    "home": "今日",
     "supplements": "保健品",
-    "history": "歷史紀錄"
+    "medications": "藥物",
+    "calendar": "日曆",
+    "history": "歷史"
   },
   "home": {
     "greeting": "早安",
@@ -17,13 +19,16 @@
     "days": "天",
     "allDone": "今天全部完成！🎉",
     "remaining": "還有 {count} 項未完成",
-    "noSupplements": "還沒有保健品，去新增一個吧！",
+    "noSupplements": "還沒有保健品或藥物，去新增一個吧！",
     "addFirst": "新增保健品",
     "morning": "早上",
     "afternoon": "中午",
     "evening": "晚上",
     "checkedIn": "已服用 ✓",
-    "checkIn": "打卡"
+    "checkIn": "打卡",
+    "tabAll": "全部",
+    "tabSupplement": "保健品",
+    "tabMedication": "藥物"
   },
   "supplements": {
     "title": "我的保健品",
@@ -49,6 +54,39 @@
     "cancel": "取消",
     "empty": "還沒有任何保健品",
     "emptyHint": "點擊上方按鈕新增你的第一個保健品"
+  },
+  "medications": {
+    "title": "我的藥物",
+    "add": "新增藥物",
+    "edit": "編輯藥物",
+    "delete": "刪除",
+    "deleteConfirm": "確定要刪除此藥物嗎？相關服用紀錄也會被刪除。",
+    "name": "藥物名稱",
+    "namePlaceholder": "例如：降壓藥",
+    "type": "藥物類型",
+    "prescription": "處方藥",
+    "otc": "成藥",
+    "chineseMedicine": "中藥",
+    "dosage": "劑量",
+    "dosagePlaceholder": "例如：每次1顆",
+    "startDate": "開始日期",
+    "endDate": "結束日期",
+    "doctor": "開立醫師",
+    "doctorPlaceholder": "例如：王醫師",
+    "ongoing": "持續中",
+    "empty": "還沒有任何藥物",
+    "emptyHint": "點擊上方按鈕新增你的第一筆藥物紀錄",
+    "showAll": "顯示全部",
+    "showActive": "僅顯示使用中",
+    "inactive": "已停用",
+    "active": "使用中"
+  },
+  "calendar": {
+    "title": "服用日曆",
+    "complete": "全部完成",
+    "partial": "部分完成",
+    "noRecord": "無紀錄",
+    "noRecordDay": "這天沒有服用紀錄"
   },
   "history": {
     "title": "服用歷史",

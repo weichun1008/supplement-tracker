@@ -1,11 +1,13 @@
 {
     "app": {
-        "title": "Supplement Tracker",
-        "subtitle": "Easily manage your daily supplements"
+        "title": "Health Tracker",
+        "subtitle": "Easily manage your daily supplements & medications"
     },
     "nav": {
         "home": "Today",
         "supplements": "Supplements",
+        "medications": "Medications",
+        "calendar": "Calendar",
         "history": "History"
     },
     "home": {
@@ -17,13 +19,16 @@
         "days": "days",
         "allDone": "All done for today! 🎉",
         "remaining": "{count} remaining",
-        "noSupplements": "No supplements yet. Add your first one!",
+        "noSupplements": "No supplements or medications yet. Add your first one!",
         "addFirst": "Add Supplement",
         "morning": "Morning",
         "afternoon": "Afternoon",
         "evening": "Evening",
         "checkedIn": "Taken ✓",
-        "checkIn": "Check In"
+        "checkIn": "Check In",
+        "tabAll": "All",
+        "tabSupplement": "Supplements",
+        "tabMedication": "Medications"
     },
     "supplements": {
         "title": "My Supplements",
@@ -49,6 +54,39 @@
         "cancel": "Cancel",
         "empty": "No supplements yet",
         "emptyHint": "Click the button above to add your first supplement"
+    },
+    "medications": {
+        "title": "My Medications",
+        "add": "Add Medication",
+        "edit": "Edit Medication",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this medication? Related records will also be deleted.",
+        "name": "Medication Name",
+        "namePlaceholder": "e.g. Blood Pressure Med",
+        "type": "Type",
+        "prescription": "Prescription",
+        "otc": "OTC",
+        "chineseMedicine": "Herbal",
+        "dosage": "Dosage",
+        "dosagePlaceholder": "e.g. 1 tablet per dose",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "doctor": "Prescribing Doctor",
+        "doctorPlaceholder": "e.g. Dr. Wang",
+        "ongoing": "Ongoing",
+        "empty": "No medications yet",
+        "emptyHint": "Click the button above to add your first medication",
+        "showAll": "Show All",
+        "showActive": "Active Only",
+        "inactive": "Inactive",
+        "active": "Active"
+    },
+    "calendar": {
+        "title": "Health Calendar",
+        "complete": "Complete",
+        "partial": "Partial",
+        "noRecord": "No Record",
+        "noRecordDay": "No records for this day"
     },
     "history": {
         "title": "History",

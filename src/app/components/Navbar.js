@@ -11,7 +11,10 @@ export default function Navbar() {
     const links = [
         { href: '/supplements', icon: '✅', label: t('nav.home') },
         { href: '/supplements/manage', icon: '💊', label: t('nav.supplements') },
+        { href: '/medications', icon: '💉', label: t('nav.medications') },
+        { href: '/calendar', icon: '📅', label: t('nav.calendar') },
         { href: '/supplements/history', icon: '📊', label: t('nav.history') },
+        { href: '/wounds/admin', icon: '⚙️', label: '後台' },
     ];
 
     return (

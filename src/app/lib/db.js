@@ -1,20 +1,22 @@
 import { neon } from '@neondatabase/serverless';
 
-// ============================================
+// ==
 // In-memory fallback for local dev (no DB)
-// ============================================
+// ==
 let memoryStore = globalThis.__memoryStore;
 
 if (!memoryStore) {
   memoryStore = {
     supplements: [],
+    medications: [],
     checkIns: [],
     wounds: [],
     woundLogs: [],
     footAssessments: [],
     footImages: [],
-    users: [], // Added explicitly to support user login
+    users: [],
     nextSupId: 1,
+    nextMedId: 1,
     nextCiId: 1,
     nextWoundId: 1,
     nextWoundLogId: 1,
@@ -23,7 +25,6 @@ if (!memoryStore) {
   };
   globalThis.__memoryStore = memoryStore;
 }
-
 
 function isLocalMode() {
   return !process.env.POSTGRES_URL;
@@ -42,9 +43,9 @@ function getDb() {
   return sql;
 }
 
-// ============================================
+// ==
 // initializeDatabase
-// ============================================
+// ==
 export async function initializeDatabase() {
   if (isLocalMode()) {
     return { success: true, mode: 'memory' };
@@ -65,10 +66,30 @@ export async function initializeDatabase() {
     )
   `;
   await sql`
+    CREATE TABLE IF NOT EXISTS medications (
+      id SERIAL PRIMARY KEY,
+      user_id VARCHAR(64) NOT NULL,
+      name VARCHAR(200) NOT NULL,
+      type VARCHAR(20) DEFAULT 'prescription',
+      dosage VARCHAR(100),
+      frequency VARCHAR(50) DEFAULT 'daily',
+      time_of_day VARCHAR(20) DEFAULT 'morning',
+      start_date DATE,
+      end_date DATE,
+      prescribing_doctor VARCHAR(100),
+      notes TEXT,
+      is_active BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS check_ins (
       id SERIAL PRIMARY KEY,
       user_id VARCHAR(64) NOT NULL,
       supplement_id INTEGER REFERENCES supplements(id) ON DELETE CASCADE,
+      medication_id INTEGER REFERENCES medications(id) ON DELETE CASCADE,
+      item_type VARCHAR(20) DEFAULT 'supplement',
       checked_at TIMESTAMP DEFAULT NOW(),
       date DATE DEFAULT CURRENT_DATE
     )
@@ -133,6 +154,7 @@ export async function initializeDatabase() {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_supplements_user ON supplements(user_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_medications_user ON medications(user_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_checkins_user_date ON check_ins(user_id, date)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_wounds_user ON wounds(user_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_wound_logs_user_date ON wound_logs(user_id, date)`;
@@ -150,9 +172,9 @@ export async function initializeDatabase() {
   return { success: true, mode: 'postgres' };
 }
 
-// ============================================
+// ==
 // Supplements CRUD
-// ============================================
+// ==
 export async function getSupplements(userId) {
   if (isLocalMode()) {
     return memoryStore.supplements.filter((s) => s.user_id === userId);
@@ -223,28 +245,33 @@ export async function deleteSupplement(userId, id) {
   return { success: true };
 }
 
-// ============================================
+// ==
 // Check-ins
-// ============================================
+// ==
 export async function getCheckIns(userId, date) {
   if (isLocalMode()) {
     const today = date || todayStr();
     return memoryStore.checkIns
       .filter((ci) => ci.user_id === userId && ci.date === today)
       .map((ci) => {
+        if (ci.item_type === 'medication') {
+          const med = memoryStore.medications.find((m) => m.id === ci.medication_id);
+          return { ...ci, item_name: med?.name || 'Unknown', dosage: med?.dosage, time_of_day: med?.time_of_day, supplement_name: med?.name || 'Unknown' };
+        }
         const sup = memoryStore.supplements.find((s) => s.id === ci.supplement_id);
-        return {
-          ...ci,
-          supplement_name: sup?.name || 'Unknown',
-          dosage: sup?.dosage,
-          time_of_day: sup?.time_of_day,
-        };
+        return { ...ci, item_name: sup?.name || 'Unknown', dosage: sup?.dosage, time_of_day: sup?.time_of_day, supplement_name: sup?.name || 'Unknown' };
       });
   }
   const sql = getDb();
   return await sql`
-    SELECT ci.*, s.name as supplement_name, s.dosage, s.time_of_day
-    FROM check_ins ci JOIN supplements s ON ci.supplement_id = s.id
+    SELECT ci.*,
+      COALESCE(s.name, m.name) as supplement_name,
+      COALESCE(s.name, m.name) as item_name,
+      COALESCE(s.dosage, m.dosage) as dosage,
+      COALESCE(s.time_of_day, m.time_of_day) as time_of_day
+    FROM check_ins ci
+    LEFT JOIN supplements s ON ci.supplement_id = s.id AND ci.item_type = 'supplement'
+    LEFT JOIN medications m ON ci.medication_id = m.id AND ci.item_type = 'medication'
     WHERE ci.user_id = ${userId} AND ci.date = ${date}
     ORDER BY ci.checked_at
   `;
@@ -276,17 +303,22 @@ export async function getCheckInHistory(userId, startDate, endDate) {
   `;
 }
 
-export async function createCheckIn(userId, supplementId) {
+export async function createCheckIn(userId, supplementId, itemType = 'supplement', medicationId = null) {
   if (isLocalMode()) {
     const today = todayStr();
-    const existing = memoryStore.checkIns.find(
-      (ci) => ci.user_id === userId && ci.supplement_id === supplementId && ci.date === today
-    );
+    const existing = memoryStore.checkIns.find((ci) => {
+      if (itemType === 'medication') {
+        return ci.user_id === userId && ci.medication_id === medicationId && ci.item_type === 'medication' && ci.date === today;
+      }
+      return ci.user_id === userId && ci.supplement_id === supplementId && ci.item_type === 'supplement' && ci.date === today;
+    });
     if (existing) return { already_checked: true };
     const ci = {
       id: memoryStore.nextCiId++,
       user_id: userId,
-      supplement_id: supplementId,
+      supplement_id: itemType === 'supplement' ? supplementId : null,
+      medication_id: itemType === 'medication' ? medicationId : null,
+      item_type: itemType,
       checked_at: new Date().toISOString(),
       date: today,
     };
@@ -294,25 +326,42 @@ export async function createCheckIn(userId, supplementId) {
     return ci;
   }
   const sql = getDb();
+  if (itemType === 'medication') {
+    const existing = await sql`
+      SELECT id FROM check_ins WHERE user_id = ${userId} AND medication_id = ${medicationId} AND item_type = 'medication' AND date = CURRENT_DATE
+    `;
+    if (existing.length > 0) return { already_checked: true };
+    const rows = await sql`
+      INSERT INTO check_ins (user_id, medication_id, item_type) VALUES (${userId}, ${medicationId}, 'medication') RETURNING *
+    `;
+    return rows[0];
+  }
   const existing = await sql`
-    SELECT id FROM check_ins WHERE user_id = ${userId} AND supplement_id = ${supplementId} AND date = CURRENT_DATE
+    SELECT id FROM check_ins WHERE user_id = ${userId} AND supplement_id = ${supplementId} AND item_type = 'supplement' AND date = CURRENT_DATE
   `;
   if (existing.length > 0) return { already_checked: true };
   const rows = await sql`
-    INSERT INTO check_ins (user_id, supplement_id) VALUES (${userId}, ${supplementId}) RETURNING *
+    INSERT INTO check_ins (user_id, supplement_id, item_type) VALUES (${userId}, ${supplementId}, 'supplement') RETURNING *
   `;
   return rows[0];
 }
 
-export async function removeCheckIn(userId, supplementId, date) {
+export async function removeCheckIn(userId, supplementId, date, itemType = 'supplement', medicationId = null) {
   if (isLocalMode()) {
-    memoryStore.checkIns = memoryStore.checkIns.filter(
-      (ci) => !(ci.user_id === userId && ci.supplement_id === supplementId && ci.date === date)
-    );
+    memoryStore.checkIns = memoryStore.checkIns.filter((ci) => {
+      if (itemType === 'medication') {
+        return !(ci.user_id === userId && ci.medication_id === medicationId && ci.item_type === 'medication' && ci.date === date);
+      }
+      return !(ci.user_id === userId && ci.supplement_id === supplementId && ci.item_type === 'supplement' && ci.date === date);
+    });
     return { success: true };
   }
   const sql = getDb();
-  await sql`DELETE FROM check_ins WHERE user_id = ${userId} AND supplement_id = ${supplementId} AND date = ${date}`;
+  if (itemType === 'medication') {
+    await sql`DELETE FROM check_ins WHERE user_id = ${userId} AND medication_id = ${medicationId} AND item_type = 'medication' AND date = ${date}`;
+  } else {
+    await sql`DELETE FROM check_ins WHERE user_id = ${userId} AND supplement_id = ${supplementId} AND item_type = 'supplement' AND date = ${date}`;
+  }
   return { success: true };
 }
 
@@ -345,9 +394,9 @@ export async function getStreak(userId) {
   return rows[0]?.streak || 0;
 }
 
-// ============================================
+// ==
 // Wounds CRUD
-// ============================================
+// ==
 export async function getWounds(userId) {
   if (isLocalMode()) {
     return memoryStore.wounds.filter((w) => w.user_id === userId && (w.status === 'active' || !w.status));
@@ -439,14 +488,54 @@ export async function createWound(userId, data) {
   const rows = await sql`
     INSERT INTO wounds (user_id, name, location, date_of_injury, display_name, picture_url, wound_type, body_location, status)
     VALUES (${userId}, ${data.name || '未命名傷口'}, ${data.location || null}, ${data.date_of_injury || todayStr()}, ${data.display_name || null}, ${data.picture_url || null}, ${data.wound_type || null}, ${data.body_location || null}, 'active')
+// Medications CRUD
+// ==
+export async function getMedications(userId, activeOnly = true) {
+  if (isLocalMode()) {
+    return memoryStore.medications.filter((m) => m.user_id === userId && (!activeOnly || m.is_active));
+  }
+  const sql = getDb();
+  if (activeOnly) {
+    return await sql`SELECT * FROM medications WHERE user_id = ${userId} AND is_active = true ORDER BY time_of_day, name`;
+  }
+  return await sql`SELECT * FROM medications WHERE user_id = ${userId} ORDER BY is_active DESC, time_of_day, name`;
+}
+
+export async function createMedication(userId, data) {
+  if (isLocalMode()) {
+    const med = {
+      id: memoryStore.nextMedId++,
+      user_id: userId,
+      name: data.name,
+      type: data.type || 'prescription',
+      dosage: data.dosage || null,
+      frequency: data.frequency || 'daily',
+      time_of_day: data.time_of_day || 'morning',
+      start_date: data.start_date || null,
+      end_date: data.end_date || null,
+      prescribing_doctor: data.prescribing_doctor || null,
+      notes: data.notes || null,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    memoryStore.medications.push(med);
+    return med;
+  }
+  const sql = getDb();
+  const rows = await sql`
+    INSERT INTO medications (user_id, name, type, dosage, frequency, time_of_day, start_date, end_date, prescribing_doctor, notes)
+    VALUES (${userId}, ${data.name}, ${data.type || 'prescription'}, ${data.dosage || null}, ${data.frequency || 'daily'},
+      ${data.time_of_day || 'morning'}, ${data.start_date || null}, ${data.end_date || null},
+      ${data.prescribing_doctor || null}, ${data.notes || null})
     RETURNING *
   `;
   return rows[0];
 }
 
-// ============================================
+// ==
 // Wound Logs (Check-ins for wounds)
-// ============================================
+// ==
 export async function getWoundLogs(userId, woundId) {
   if (isLocalMode()) {
     return memoryStore.woundLogs
@@ -496,14 +585,43 @@ export async function createWoundLog(userId, woundId, data) {
   const rows = await sql`
     INSERT INTO wound_logs (user_id, wound_id, image_data, nrs_pain_score, symptoms, ai_assessment_summary, ai_status_label)
     VALUES (${userId}, ${woundId}, ${data.image_data || null}, ${data.nrs_pain_score || 0}, ${data.symptoms || null}, ${data.ai_assessment_summary || null}, ${data.ai_status_label || null})
+export async function updateMedication(userId, id, data) {
+  if (isLocalMode()) {
+    const idx = memoryStore.medications.findIndex((m) => m.id === id && m.user_id === userId);
+    if (idx === -1) return null;
+    memoryStore.medications[idx] = {
+      ...memoryStore.medications[idx],
+      name: data.name,
+      type: data.type || 'prescription',
+      dosage: data.dosage || null,
+      frequency: data.frequency || 'daily',
+      time_of_day: data.time_of_day || 'morning',
+      start_date: data.start_date || null,
+      end_date: data.end_date || null,
+      prescribing_doctor: data.prescribing_doctor || null,
+      notes: data.notes || null,
+      is_active: data.is_active !== undefined ? data.is_active : true,
+      updated_at: new Date().toISOString(),
+    };
+    return memoryStore.medications[idx];
+  }
+  const sql = getDb();
+  const rows = await sql`
+    UPDATE medications SET name = ${data.name}, type = ${data.type || 'prescription'},
+      dosage = ${data.dosage || null}, frequency = ${data.frequency || 'daily'},
+      time_of_day = ${data.time_of_day || 'morning'}, start_date = ${data.start_date || null},
+      end_date = ${data.end_date || null}, prescribing_doctor = ${data.prescribing_doctor || null},
+      notes = ${data.notes || null}, is_active = ${data.is_active !== undefined ? data.is_active : true},
+      updated_at = NOW()
+    WHERE id = ${id} AND user_id = ${userId}
     RETURNING *
   `;
   return rows[0];
 }
 
-// ============================================
+// ==
 // User Auth
-// ============================================
+// ==
 export async function findUserByEmail(email) {
   if (isLocalMode()) {
     return (memoryStore.users || []).find((u) => u.email === email) || null;
@@ -563,9 +681,9 @@ export async function findUserById(userId) {
   return rows[0] || null;
 }
 
-// ============================================
+// ==
 // Foot Care (Bones)
-// ============================================
+// ==
 export async function getFootAssessments(userId) {
   if (isLocalMode()) {
     return memoryStore.footAssessments
@@ -631,3 +749,63 @@ export async function createFootImage(userId, data) {
   return rows[0];
 }
 
+export async function deleteMedication(userId, id) {
+  if (isLocalMode()) {
+    memoryStore.checkIns = memoryStore.checkIns.filter((ci) => !(ci.medication_id === id && ci.item_type === 'medication'));
+    memoryStore.medications = memoryStore.medications.filter((m) => !(m.id === id && m.user_id === userId));
+    return { success: true };
+  }
+  const sql = getDb();
+  await sql`DELETE FROM medications WHERE id = ${id} AND user_id = ${userId}`;
+  return { success: true };
+}
+
+// ==
+// Calendar helpers
+// ==
+export async function getCalendarData(userId, year, month) {
+  const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+  if (isLocalMode()) {
+    const days = {};
+    memoryStore.checkIns
+      .filter((ci) => ci.user_id === userId && ci.date >= startDate && ci.date <= endDate)
+      .forEach((ci) => {
+        if (!days[ci.date]) days[ci.date] = { supplement_count: 0, medication_count: 0 };
+        if (ci.item_type === 'medication') days[ci.date].medication_count++;
+        else days[ci.date].supplement_count++;
+      });
+
+    const totalSup = memoryStore.supplements.filter((s) => s.user_id === userId).length;
+    const totalMed = memoryStore.medications.filter((m) => m.user_id === userId && m.is_active).length;
+
+    return Object.entries(days).map(([date, counts]) => ({
+      date,
+      supplement_count: counts.supplement_count,
+      medication_count: counts.medication_count,
+      total_items: totalSup + totalMed,
+      completed: counts.supplement_count + counts.medication_count,
+    }));
+  }
+
+  const sql = getDb();
+  const rows = await sql`
+    SELECT
+      ci.date,
+      COUNT(CASE WHEN ci.item_type = 'supplement' THEN 1 END) as supplement_count,
+      COUNT(CASE WHEN ci.item_type = 'medication' THEN 1 END) as medication_count,
+      COUNT(*) as completed
+    FROM check_ins ci
+    WHERE ci.user_id = ${userId} AND ci.date >= ${startDate} AND ci.date <= ${endDate}
+    GROUP BY ci.date
+    ORDER BY ci.date
+  `;
+
+  const supCount = await sql`SELECT COUNT(*) as total FROM supplements WHERE user_id = ${userId}`;
+  const medCount = await sql`SELECT COUNT(*) as total FROM medications WHERE user_id = ${userId} AND is_active = true`;
+  const totalItems = parseInt(supCount[0]?.total || 0) + parseInt(medCount[0]?.total || 0);
+
+  return rows.map((r) => ({ ...r, total_items: totalItems }));
+}

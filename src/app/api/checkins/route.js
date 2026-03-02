@@ -33,7 +33,15 @@ export async function GET(request) {
 export async function POST(request) {
     try {
         const userId = await getUserId();
-        const { supplementId } = await request.json();
+        const { supplementId, medicationId, itemType } = await request.json();
+
+        if (itemType === 'medication') {
+            if (!medicationId) {
+                return NextResponse.json({ error: 'medicationId is required' }, { status: 400 });
+            }
+            const checkIn = await createCheckIn(userId, null, 'medication', medicationId);
+            return withUserCookie(NextResponse.json(checkIn, { status: 201 }), userId);
+        }
 
         if (!supplementId) {
             return NextResponse.json({ error: 'supplementId is required' }, { status: 400 });
@@ -50,8 +58,12 @@ export async function POST(request) {
 export async function DELETE(request) {
     try {
         const userId = await getUserId();
-        const { supplementId, date } = await request.json();
-        await removeCheckIn(userId, supplementId, date);
+        const { supplementId, medicationId, date, itemType } = await request.json();
+        if (itemType === 'medication') {
+            await removeCheckIn(userId, null, date, 'medication', medicationId);
+        } else {
+            await removeCheckIn(userId, supplementId, date);
+        }
         return withUserCookie(NextResponse.json({ success: true }), userId);
     } catch (error) {
         console.error('Error removing check-in:', error);
