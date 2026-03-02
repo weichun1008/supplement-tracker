@@ -488,6 +488,10 @@ export async function createWound(userId, data) {
   const rows = await sql`
     INSERT INTO wounds (user_id, name, location, date_of_injury, display_name, picture_url, wound_type, body_location, status)
     VALUES (${userId}, ${data.name || '未命名傷口'}, ${data.location || null}, ${data.date_of_injury || todayStr()}, ${data.display_name || null}, ${data.picture_url || null}, ${data.wound_type || null}, ${data.body_location || null}, 'active')
+    RETURNING *
+  `;
+  return rows[0];
+}
 // Medications CRUD
 // ==
 export async function getMedications(userId, activeOnly = true) {
@@ -585,6 +589,10 @@ export async function createWoundLog(userId, woundId, data) {
   const rows = await sql`
     INSERT INTO wound_logs (user_id, wound_id, image_data, nrs_pain_score, symptoms, ai_assessment_summary, ai_status_label)
     VALUES (${userId}, ${woundId}, ${data.image_data || null}, ${data.nrs_pain_score || 0}, ${data.symptoms || null}, ${data.ai_assessment_summary || null}, ${data.ai_status_label || null})
+    RETURNING *
+  `;
+  return rows[0];
+}
 export async function updateMedication(userId, id, data) {
   if (isLocalMode()) {
     const idx = memoryStore.medications.findIndex((m) => m.id === id && m.user_id === userId);

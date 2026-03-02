@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SmartCamera from '@/app/components/SmartCamera';
 
 export default function BonesScanPage() {
     const router = useRouter();
@@ -12,6 +13,7 @@ export default function BonesScanPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
+    const [showSmartCamera, setShowSmartCamera] = useState(false);
 
     const handleCapture = (e) => {
         const file = e.target.files?.[0];
@@ -24,6 +26,13 @@ export default function BonesScanPage() {
             setPreview(ev.target.result);
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleSmartCapture = (imageData) => {
+        setPreview(imageData);
+        setShowSmartCamera(false);
+        setResult(null);
+        setError(null);
     };
 
     const handleRetake = () => {
@@ -92,7 +101,7 @@ export default function BonesScanPage() {
     };
 
     return (
-        <div style={{ padding: '1.5rem', maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ padding: '1.5rem', maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem', minHeight: '100vh' }}>
             <header>
                 <Link href="/bones" style={{ color: '#a8ff78', textDecoration: 'none', fontSize: '0.9rem', marginBottom: '1rem', display: 'inline-block' }}>
                     ← 返回中心
@@ -113,6 +122,24 @@ export default function BonesScanPage() {
                     <p style={{ color: '#fff', fontWeight: 'bold' }}>請拍攝雙腳正上方俯拍照</p>
                     <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '2rem' }}>確保光線明亮，雙腳平放於地面</p>
 
+                    <button
+                        onClick={() => setShowSmartCamera(true)}
+                        style={{
+                            display: 'inline-block',
+                            padding: '1rem 2rem',
+                            background: '#a8ff78',
+                            color: '#1a3630',
+                            fontWeight: 'bold',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            width: '80%',
+                            border: 'none',
+                            marginBottom: '1rem'
+                        }}
+                    >
+                        ✨ 啟動智能相機
+                    </button>
+
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -125,14 +152,15 @@ export default function BonesScanPage() {
                     <label htmlFor="camera-input" style={{
                         display: 'inline-block',
                         padding: '1rem 2rem',
-                        background: '#a8ff78',
-                        color: '#1a3630',
+                        background: 'rgba(255,255,255,0.1)',
+                        color: '#fff',
                         fontWeight: 'bold',
                         borderRadius: '12px',
                         cursor: 'pointer',
-                        width: '80%'
+                        width: '80%',
+                        border: '1px solid rgba(255,255,255,0.2)'
                     }}>
-                        開啟相機 / 相簿
+                        從相簿上傳
                     </label>
                 </div>
             ) : (
@@ -231,7 +259,21 @@ export default function BonesScanPage() {
                     )}
                 </div>
             )}
-            <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+            {showSmartCamera && (
+                <SmartCamera
+                    onCapture={handleSmartCapture}
+                    onClose={() => setShowSmartCamera(false)}
+                />
+            )}
+
+            <style jsx>{`
+                @keyframes fadeIn { 
+                    from { opacity: 0; transform: translateY(10px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+            `}</style>
         </div>
     );
 }
+
