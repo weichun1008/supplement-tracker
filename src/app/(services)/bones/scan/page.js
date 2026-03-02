@@ -117,7 +117,6 @@ export default function BonesScanPage() {
                         ref={fileInputRef}
                         type="file"
                         accept="image/*"
-                        capture="environment"
                         onChange={handleCapture}
                         id="camera-input"
                         style={{ display: 'none' }}

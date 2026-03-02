@@ -72,7 +72,6 @@ export default function CameraCapture({ mode, onResult, onClose }) {
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            capture="environment"
                             onChange={handleCapture}
                             className="camera-file-input"
                             id="camera-input"

@@ -137,7 +137,7 @@ export default function WoundScanPage() {
                         <button onClick={() => setImagePreview(null)} style={styles.removeBtn}>✕</button>
                     </div>
                 )}
-                <input type="file" accept="image/*" capture="environment" ref={fileInputRef} onChange={handleImageCapture} style={{ display: 'none' }} />
+                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageCapture} style={{ display: 'none' }} />
             </div>
 
             {/* 2. NRS */}
