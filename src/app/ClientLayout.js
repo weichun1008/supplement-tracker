@@ -18,7 +18,7 @@ function ensureUserId() {
 }
 
 // Routes that don't require authentication
-const PUBLIC_ROUTES = ['/login', '/api'];
+const PUBLIC_ROUTES = ['/login', '/api', '/flex8'];
 
 function RouteGuard({ children }) {
     const { isAuthenticated, isLoading } = useAuth();
