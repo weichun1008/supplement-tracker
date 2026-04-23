@@ -234,36 +234,45 @@ export default function HomePage() {
             </div>
           </div>
           <div className={styles.dtxVisual}>
-            <div className={styles.ecoFlowWrap}>
-              <div className={styles.ecoFlowTitle}>How it works</div>
-              <div className={styles.ecoFlowTrack}>
-                {[
-                  { num: "01", label: "Patient", sub: "Sets goals & logs daily habits" },
-                  { num: "02", label: "AI Engine", sub: "Personalizes & nudges in real-time" },
-                  { num: "03", label: "Dietitian", sub: "1-on-1 professional care" },
-                  { num: "04", label: "Clinic", sub: "Clinical check-in & lab data" },
-                  { num: "05", label: "Outcomes", sub: "Lasting metabolic change" },
-                ].flatMap((step, i, arr) => {
-                  const items = [
-                    <div key={`step-${i}`} className={styles.ecoStepNew}>
-                      <div className={i === 2 ? styles.ecoStepNumAccent : styles.ecoStepNum}>{step.num}</div>
-                      <div className={styles.ecoStepLabel}>{step.label}</div>
-                      <div className={styles.ecoStepSub}>{step.sub}</div>
-                    </div>,
-                  ];
-                  if (i < arr.length - 1) {
-                    items.push(
-                      <div key={`arrow-${i}`} className={styles.ecoStepArrow}>
-                        <svg width="28" height="14" viewBox="0 0 28 14" fill="none">
-                          <line x1="0" y1="7" x2="22" y2="7" stroke="#C8DFE0" strokeWidth="1.5"/>
-                          <polyline points="17,2.5 24,7 17,11.5" stroke="#004F51" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
-                        </svg>
-                      </div>
-                    );
-                  }
-                  return items;
-                })}
-              </div>
+            <div className={styles.stackWrap}>
+              {[
+                {
+                  num: "01",
+                  title: "Engagement Layer",
+                  desc: "Where users meet Cofit every day",
+                  items: ["Mobile App", "AI Coach", "Behavior Nudges", "Daily Logging"],
+                  variant: "top",
+                },
+                {
+                  num: "02",
+                  title: "Care Layer",
+                  desc: "Human expertise, personalized",
+                  items: ["Certified Dietitian", "1:1 Coaching", "Custom Meal Plan", "Progress Review"],
+                  variant: "mid",
+                },
+                {
+                  num: "03",
+                  title: "Clinical Layer",
+                  desc: "Integrated with healthcare",
+                  items: ["Clinic Network", "Lab Data", "Medical Follow-up", "Outcome Tracking"],
+                  variant: "base",
+                },
+              ].map((layer, i) => (
+                <div key={i} className={`${styles.stackCard} ${styles[`stack_${layer.variant}`]}`}>
+                  <div className={styles.stackHeader}>
+                    <span className={styles.stackNum}>{layer.num}</span>
+                    <div>
+                      <div className={styles.stackTitle}>{layer.title}</div>
+                      <div className={styles.stackDesc}>{layer.desc}</div>
+                    </div>
+                  </div>
+                  <div className={styles.stackPills}>
+                    {layer.items.map((item, j) => (
+                      <span key={j} className={styles.stackPill}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

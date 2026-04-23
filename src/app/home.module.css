@@ -226,43 +226,66 @@
   padding: 8px 18px; border-radius: var(--radius-pill);
   font-size: 0.875rem; font-weight: 600;
 }
-.dtxVisual { flex: 0.8; display: flex; justify-content: center; align-items: center; }
-.ecoFlowWrap {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 32px 28px;
-  box-shadow: var(--shadow-card); width: 100%;
+.dtxVisual { flex: 0.9; display: flex; justify-content: center; align-items: center; }
+
+/* Layered stack (Stripe/Linear style) */
+.stackWrap {
+  position: relative; width: 100%; max-width: 440px;
+  display: flex; flex-direction: column; gap: 14px;
+  perspective: 1200px;
 }
-.ecoFlowTitle {
-  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--muted); margin-bottom: 28px; text-align: center;
+.stackCard {
+  position: relative; border-radius: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.ecoFlowTrack {
-  display: flex; align-items: flex-start; justify-content: center;
-  flex-wrap: wrap; gap: 0;
+.stackCard:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0,0,0,0.1); }
+
+.stack_top {
+  background: linear-gradient(135deg, #F1FBF1 0%, #E6F6E6 100%);
+  margin-left: 0; margin-right: 22px;
+  z-index: 3;
 }
-.ecoStepNew {
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center; width: 88px; padding: 0 4px;
+.stack_mid {
+  background: linear-gradient(135deg, #E6F2F2 0%, #CFE5E6 100%);
+  margin-left: 22px; margin-right: 11px;
+  z-index: 2;
 }
-.ecoStepNum {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--teal); color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.05em;
-  margin-bottom: 10px; flex-shrink: 0;
+.stack_base {
+  background: linear-gradient(135deg, #004F51 0%, #002A2C 100%);
+  color: white;
+  margin-left: 44px; margin-right: 0;
+  z-index: 1;
+  border-color: rgba(255,255,255,0.08);
 }
-.ecoStepNumAccent {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--green); color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.05em;
-  margin-bottom: 10px; flex-shrink: 0;
-}
-.ecoStepLabel { font-weight: 700; font-size: 0.8125rem; color: var(--dark); margin-bottom: 4px; }
-.ecoStepSub { font-size: 0.6875rem; color: var(--muted); line-height: 1.4; }
-.ecoStepArrow {
-  display: flex; align-items: flex-start; padding-top: 14px;
+
+.stackHeader { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.stackNum {
+  font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.12em;
+  padding: 5px 10px; border-radius: 6px;
+  background: rgba(0,79,81,0.1); color: var(--teal);
   flex-shrink: 0;
+}
+.stack_base .stackNum { background: rgba(255,255,255,0.12); color: white; }
+
+.stackTitle { font-size: 1.0625rem; font-weight: 700; color: var(--dark); letter-spacing: -0.01em; line-height: 1.2; }
+.stack_base .stackTitle { color: white; }
+.stackDesc { font-size: 0.8125rem; color: var(--muted); margin-top: 3px; }
+.stack_base .stackDesc { color: rgba(255,255,255,0.65); }
+
+.stackPills { display: flex; flex-wrap: wrap; gap: 6px; }
+.stackPill {
+  background: rgba(255,255,255,0.8);
+  color: var(--dark);
+  padding: 5px 12px; border-radius: 9999px;
+  font-size: 0.75rem; font-weight: 600;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.stack_base .stackPill {
+  background: rgba(255,255,255,0.1); color: white;
+  border-color: rgba(255,255,255,0.12);
 }
 
 /* ── Experts ── */
@@ -337,6 +360,7 @@
   .heroVisual { max-width: 100%; }
   .solutionsGrid { grid-template-columns: 1fr 1fr; }
   .dtxInner { flex-direction: column; gap: 48px; }
+  .stack_top, .stack_mid, .stack_base { margin-left: 0; margin-right: 0; }
   .partnerInner { flex-direction: column; gap: 48px; }
   .footerTop { grid-template-columns: 1fr 1fr; }
   .proofBar { flex-wrap: wrap; gap: 24px; padding: 28px 32px; }
