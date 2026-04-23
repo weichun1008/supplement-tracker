@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { Instagram, Facebook, Youtube, Music2, MapPin, Target } from 'lucide-react';
 import styles from './page.module.css';
 
 const COFIT_LOGO = 'https://image.fevercdn.com/?bucket=picture-original.fevercdn.com&filepath=feversocial%2F35653%2F37772%2Fb705f7547aa16424ed6ddebc.png';
@@ -134,12 +135,12 @@ export default function Flex8Page() {
         {/* Search Widget */}
         <div className={styles.searchWidget}>
           <div className={styles.searchField}>
-            <span className={styles.searchFieldIcon}>📍</span>
+            <span className={styles.searchFieldIcon}><MapPin size={18} strokeWidth={1.75} /></span>
             <span className={styles.searchFieldText}>City or region</span>
           </div>
           <div className={styles.searchDivider}></div>
           <div className={styles.searchField}>
-            <span className={styles.searchFieldIcon}>🎯</span>
+            <span className={styles.searchFieldIcon}><Target size={18} strokeWidth={1.75} /></span>
             <span className={styles.searchFieldText}>Specialties</span>
           </div>
           <div className={styles.searchDivider}></div>
@@ -394,31 +395,6 @@ export default function Flex8Page() {
         </div>
       </section>
 
-      {/* ── 8. App Promo ── */}
-      <div className={styles.appPromo}>
-        <div className={styles.promoContent}>
-          <h2 className={styles.promoTitle}>Improve nutrition, sleep, and movement — all in one app</h2>
-          <p className={styles.promoDesc}>
-            Download the Supplement Tracker app to log your meals, track your supplements, and message your nutritionist directly from your pocket.
-          </p>
-          <div className={styles.storeBtns}>
-            <a href="#" className={styles.storeBtn}>
-              <span className={styles.storeBtnIcon}>🍎</span> App Store
-            </a>
-            <a href="#" className={styles.storeBtn}>
-              <span className={styles.storeBtnIcon}>▶️</span> Google Play
-            </a>
-          </div>
-        </div>
-        <div className={styles.promoPhone}>
-          <div className={styles.phoneFrame}>
-            <div className={styles.phoneScreen}>
-              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=400&h=800" alt="App screen" />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── 9. Blog Section ── */}
       <section className={styles.blogSection}>
         <div className={styles.blogInner}>
@@ -482,10 +458,10 @@ export default function Flex8Page() {
                 Connecting clients with registered dietitians to make personalized nutrition care easy to access and affordable. Powered by Cofit Healthcare.
               </p>
               <div className={styles.footerSocials}>
-                <a href="#" className={styles.socialIcon}>📸</a>
-                <a href="#" className={styles.socialIcon}>💼</a>
-                <a href="#" className={styles.socialIcon}>🎵</a>
-                <a href="#" className={styles.socialIcon}>▶️</a>
+                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram"><Instagram size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Facebook"><Facebook size={16} strokeWidth={1.75} /></a>
+                <a href="#" className={styles.socialIcon} aria-label="TikTok"><Music2 size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.youtube.com/@Cofit211" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="YouTube"><Youtube size={16} strokeWidth={1.75} /></a>
               </div>
             </div>
             <div className={styles.footerColumn}>

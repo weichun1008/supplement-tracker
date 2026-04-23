@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useMotionValue, useTransform, useSpring, animate, useInView } from 'framer-motion';
+import { Instagram, Facebook, Youtube, Apple, Play, Star, ArrowRight, Smartphone } from 'lucide-react';
 import styles from './home.module.css';
 
 function CountUp({ to, decimals = 0, suffix = '', prefix = '', duration = 1.8 }) {
@@ -332,6 +333,83 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Community & App ── */}
+      <section className={styles.communitySection}>
+        <div className={styles.communityInner}>
+          <div className={styles.sectionLabel} style={{ textAlign: 'center' }}>Community & Tools</div>
+          <h2 className={styles.sectionTitle} style={{ textAlign: 'center' }}>Trusted by millions, every day</h2>
+          <p className={styles.expertsDesc}>Our app and YouTube channel reach over a million people building healthier habits.</p>
+
+          <div className={styles.communityGrid}>
+            {/* YouTube Card */}
+            <motion.a
+              href="https://www.youtube.com/@Cofit211"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.communityCard} ${styles.communityYT}`}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -4 }}
+            >
+              <div className={styles.communityBadge}>
+                <Youtube size={28} strokeWidth={2} />
+              </div>
+              <div className={styles.communityStat}>
+                <span className={styles.communityNum}><CountUp to={1030000} suffix="+" /></span>
+                <span className={styles.communitySubtle}>subscribers</span>
+              </div>
+              <h3 className={styles.communityTitle}>Taiwan's #1 nutrition channel</h3>
+              <p className={styles.communityDesc}>
+                Science-backed nutrition, hormone health, and metabolic wellness — new episodes every week, entirely free.
+              </p>
+              <div className={styles.communityMeta}>
+                <span>@Cofit211</span>
+                <span className={styles.communityCta}>Subscribe <ArrowRight size={16} /></span>
+              </div>
+            </motion.a>
+
+            {/* App Download Card */}
+            <motion.div
+              className={`${styles.communityCard} ${styles.communityApp}`}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className={styles.communityBadge} style={{ background: 'rgba(0,79,81,0.1)', color: 'var(--teal)' }}>
+                <Smartphone size={28} strokeWidth={2} />
+              </div>
+              <div className={styles.communityStat}>
+                <span className={styles.communityNum}><CountUp to={1000000} suffix="+" /></span>
+                <span className={styles.communitySubtle}>downloads</span>
+              </div>
+              <h3 className={styles.communityTitle}>Your nutritionist in your pocket</h3>
+              <p className={styles.communityDesc}>
+                Log meals, track habits, message your dietitian, and get AI-powered nudges — all in one app. 4.8★ rated.
+              </p>
+              <div className={styles.storeBadges}>
+                <a href="#" className={styles.storeBadge} aria-label="Download on the App Store">
+                  <Apple size={22} strokeWidth={1.75} />
+                  <div className={styles.storeBadgeText}>
+                    <span className={styles.storeBadgeSmall}>Download on the</span>
+                    <span className={styles.storeBadgeBig}>App Store</span>
+                  </div>
+                </a>
+                <a href="#" className={styles.storeBadge} aria-label="Get it on Google Play">
+                  <Play size={22} strokeWidth={1.75} fill="currentColor" />
+                  <div className={styles.storeBadgeText}>
+                    <span className={styles.storeBadgeSmall}>GET IT ON</span>
+                    <span className={styles.storeBadgeBig}>Google Play</span>
+                  </div>
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Nutritionists ── */}
       <section className={styles.expertsSection}>
         <div className={styles.sectionLabel} style={{ textAlign: 'center' }}>Our Nutritionists</div>
@@ -392,8 +470,9 @@ export default function HomePage() {
               <span className={styles.footerLogo}><span className={styles.navLogoGreen}>cofit</span></span>
               <p className={styles.footerDesc}>Connecting people with registered dietitians to make personalized nutrition care easy to access and affordable. Powered by Cofit Healthcare.</p>
               <div className={styles.footerSocials}>
-                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>📸</a>
-                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>💼</a>
+                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram"><Instagram size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Facebook"><Facebook size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.youtube.com/@Cofit211" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="YouTube"><Youtube size={16} strokeWidth={1.75} /></a>
               </div>
             </div>
             <div className={styles.footerCol}>

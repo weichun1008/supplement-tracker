@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { Video, Dna, Salad, MessageCircle, Instagram, Facebook, Youtube } from 'lucide-react';
 import styles from '../flex8/page.module.css';
 
 const EXPERTS = [
@@ -275,16 +276,17 @@ export default function ConsultationPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
             {[
-              { icon: '🎥', title: 'Video or Phone', desc: 'Conducted online via video call or phone. Available worldwide, no travel needed.' },
-              { icon: '🧬', title: 'Hormone Type Assessment', desc: 'Your nutritionist identifies your fat-gain pattern from 6 clinical hormone types.' },
-              { icon: '🥗', title: 'Customized Meal Plan', desc: 'A personalized Flexi-Carb plan tailored to your lifestyle, culture, and food preferences.' },
-              { icon: '💬', title: 'Daily Support Included', desc: 'Message your nutritionist from 9 AM to 11 PM (Taiwan Time) for ongoing guidance.' },
+              { Icon: Video, title: 'Video or Phone', desc: 'Conducted online via video call or phone. Available worldwide, no travel needed.' },
+              { Icon: Dna, title: 'Hormone Type Assessment', desc: 'Your nutritionist identifies your fat-gain pattern from 6 clinical hormone types.' },
+              { Icon: Salad, title: 'Customized Meal Plan', desc: 'A personalized Flexi-Carb plan tailored to your lifestyle, culture, and food preferences.' },
+              { Icon: MessageCircle, title: 'Daily Support Included', desc: 'Message your nutritionist from 9 AM to 11 PM (Taiwan Time) for ongoing guidance.' },
             ].map((item, i) => (
               <div key={i} style={{
                 background: '#FCFCFA', borderRadius: 20, padding: '32px 28px',
                 border: '1px solid #EEEDEB', display: 'flex', flexDirection: 'column', gap: 16,
+                transition: 'transform 0.25s ease, box-shadow 0.25s ease',
               }}>
-                <div style={{ fontSize: '2rem', background: '#E6F2F2', width: 56, height: 56, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.icon}</div>
+                <div style={{ background: '#E6F2F2', color: '#004F51', width: 56, height: 56, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><item.Icon size={26} strokeWidth={1.75} /></div>
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: 0 }}>{item.title}</h3>
                 <p style={{ color: '#52504C', fontSize: '0.9375rem', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
               </div>
@@ -335,9 +337,9 @@ export default function ConsultationPage() {
                 Connecting clients with registered dietitians to make personalized nutrition care easy to access and affordable. Powered by Cofit Healthcare.
               </p>
               <div className={styles.footerSocials}>
-                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>📸</a>
-                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>💼</a>
-                <a href="https://www.youtube.com/@UCzOblez4o3mZEkpOeFZdHWQ" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>▶️</a>
+                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram"><Instagram size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Facebook"><Facebook size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.youtube.com/@Cofit211" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="YouTube"><Youtube size={16} strokeWidth={1.75} /></a>
               </div>
             </div>
             <div className={styles.footerColumn}>
