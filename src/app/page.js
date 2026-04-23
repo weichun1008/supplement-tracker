@@ -215,22 +215,36 @@ export default function HomePage() {
             </div>
           </div>
           <div className={styles.dtxVisual}>
-            <div className={styles.ecosystemDiagram}>
-              {[
-                { icon: "👤", label: "Patient" },
-                { icon: "📱", label: "Digital Support" },
-                { icon: "🥗", label: "Dietitian" },
-                { icon: "🏥", label: "Clinic" },
-                { icon: "🔄", label: "Follow-up" },
-              ].map((step, i, arr) => (
-                <div key={i} className={styles.ecoRow}>
-                  <div className={styles.ecoStep}>
-                    <div className={styles.ecoIcon}>{step.icon}</div>
-                    <div className={styles.ecoLabel}>{step.label}</div>
-                  </div>
-                  {i < arr.length - 1 && <div className={styles.ecoArrow}>↓</div>}
-                </div>
-              ))}
+            <div className={styles.ecoFlowWrap}>
+              <div className={styles.ecoFlowTitle}>How it works</div>
+              <div className={styles.ecoFlowTrack}>
+                {[
+                  { num: "01", label: "Patient", sub: "Sets goals & logs daily habits" },
+                  { num: "02", label: "AI Engine", sub: "Personalizes & nudges in real-time" },
+                  { num: "03", label: "Dietitian", sub: "1-on-1 professional care" },
+                  { num: "04", label: "Clinic", sub: "Clinical check-in & lab data" },
+                  { num: "05", label: "Outcomes", sub: "Lasting metabolic change" },
+                ].flatMap((step, i, arr) => {
+                  const items = [
+                    <div key={`step-${i}`} className={styles.ecoStepNew}>
+                      <div className={i === 2 ? styles.ecoStepNumAccent : styles.ecoStepNum}>{step.num}</div>
+                      <div className={styles.ecoStepLabel}>{step.label}</div>
+                      <div className={styles.ecoStepSub}>{step.sub}</div>
+                    </div>,
+                  ];
+                  if (i < arr.length - 1) {
+                    items.push(
+                      <div key={`arrow-${i}`} className={styles.ecoStepArrow}>
+                        <svg width="28" height="14" viewBox="0 0 28 14" fill="none">
+                          <line x1="0" y1="7" x2="22" y2="7" stroke="#C8DFE0" strokeWidth="1.5"/>
+                          <polyline points="17,2.5 24,7 17,11.5" stroke="#004F51" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                        </svg>
+                      </div>
+                    );
+                  }
+                  return items;
+                })}
+              </div>
             </div>
           </div>
         </div>
