@@ -1,8 +1,56 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, useMotionValue, useTransform, useSpring, animate, useInView } from 'framer-motion';
 import styles from './home.module.css';
+
+function CountUp({ to, decimals = 0, suffix = '', prefix = '', duration = 1.8 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const count = useMotionValue(0);
+  const display = useTransform(count, (v) => {
+    const n = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toString();
+    return prefix + n.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + suffix;
+  });
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(count, to, { duration, ease: [0.22, 1, 0.36, 1] });
+      return () => controls.stop();
+    }
+  }, [inView, to, count, duration]);
+  return <motion.span ref={ref}>{display}</motion.span>;
+}
+
+function TiltCard({ children, className, delay = 0 }) {
+  const ref = useRef(null);
+  const rx = useSpring(0, { stiffness: 180, damping: 18 });
+  const ry = useSpring(0, { stiffness: 180, damping: 18 });
+  const handleMove = (e) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    ry.set(x * 8);
+    rx.set(-y * 8);
+  };
+  const reset = () => { rx.set(0); ry.set(0); };
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      onMouseMove={handleMove}
+      onMouseLeave={reset}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d', transformPerspective: 1000 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 const EXPERTS = [
   { name: "張宜婷 Y.T. Chang", role: "Chief Dietitian · CTSSN Certified", tags: ["Weight Loss", "PCOS", "Diabetes"], img: "https://picture-original.fevercdn.com/page-feversocial-202313-8048654a-87ef-4f39-ab39-aae80ed29fae.png" },
@@ -156,15 +204,21 @@ export default function HomePage() {
       </header>
 
       {/* ── Proof Bar ── */}
-      <div className={styles.proofBar}>
-        <div className={styles.proofItem}><span className={styles.proofNum}>40,000+</span><span className={styles.proofLabel}>Clients Served</span></div>
+      <motion.div
+        className={styles.proofBar}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className={styles.proofItem}><span className={styles.proofNum}><CountUp to={40000} suffix="+" /></span><span className={styles.proofLabel}>Clients Served</span></div>
         <div className={styles.proofDivider} />
-        <div className={styles.proofItem}><span className={styles.proofNum}>100+</span><span className={styles.proofLabel}>Certified Dietitians</span></div>
+        <div className={styles.proofItem}><span className={styles.proofNum}><CountUp to={100} suffix="+" /></span><span className={styles.proofLabel}>Certified Dietitians</span></div>
         <div className={styles.proofDivider} />
-        <div className={styles.proofItem}><span className={styles.proofNum}>9</span><span className={styles.proofLabel}>Clinics in TW & HK</span></div>
+        <div className={styles.proofItem}><span className={styles.proofNum}><CountUp to={9} /></span><span className={styles.proofLabel}>Clinics in TW & HK</span></div>
         <div className={styles.proofDivider} />
-        <div className={styles.proofItem}><span className={styles.proofNum}>4.8★</span><span className={styles.proofLabel}>App Store · 1M+ Downloads</span></div>
-      </div>
+        <div className={styles.proofItem}><span className={styles.proofNum}><CountUp to={4.8} decimals={1} suffix="★" /></span><span className={styles.proofLabel}>App Store · 1M+ Downloads</span></div>
+      </motion.div>
 
       {/* ── Media ── */}
       <div className={styles.mediaBar}>
@@ -258,7 +312,7 @@ export default function HomePage() {
                   variant: "base",
                 },
               ].map((layer, i) => (
-                <div key={i} className={`${styles.stackCard} ${styles[`stack_${layer.variant}`]}`}>
+                <TiltCard key={i} className={`${styles.stackCard} ${styles[`stack_${layer.variant}`]}`} delay={i * 0.12}>
                   <div className={styles.stackHeader}>
                     <span className={styles.stackNum}>{layer.num}</span>
                     <div>
@@ -271,7 +325,7 @@ export default function HomePage() {
                       <span key={j} className={styles.stackPill}>{item}</span>
                     ))}
                   </div>
-                </div>
+                </TiltCard>
               ))}
             </div>
           </div>
