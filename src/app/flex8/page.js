@@ -117,7 +117,6 @@ export default function Flex8Page() {
           <a href="#faq" className={styles.navLink}>FAQ</a>
         </div>
         <div className={styles.navActions}>
-          <Link href="/login" className={styles.btnLogin}>Log in</Link>
           <a href="https://pro.cofit.me/administrator/registration_forms/3094/new_group_class_order?org_id=3" className={styles.btnGetStarted}>Get started</a>
         </div>
       </nav>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import styles from './home.module.css';
 
@@ -85,6 +85,7 @@ const SOLUTIONS = [
 
 export default function HomePage() {
   const expertRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const scroll = (ref, dir) => { if (ref.current) ref.current.scrollBy({ left: dir * 400, behavior: 'smooth' }); };
 
   return (
@@ -103,7 +104,25 @@ export default function HomePage() {
         <div className={styles.navActions}>
           <a href="https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3" target="_blank" rel="noopener noreferrer" className={styles.btnPrimary}>Get Started</a>
         </div>
+        <button
+          className={styles.navHamburger}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(v => !v)}
+        >
+          <span className={`${styles.hamLine} ${menuOpen ? styles.hamLineOpen1 : ''}`} />
+          <span className={`${styles.hamLine} ${menuOpen ? styles.hamLineOpen2 : ''}`} />
+          <span className={`${styles.hamLine} ${menuOpen ? styles.hamLineOpen3 : ''}`} />
+        </button>
       </nav>
+      {menuOpen && (
+        <div className={styles.mobileMenu} onClick={() => setMenuOpen(false)}>
+          <Link href="/flex8" className={styles.mobileMenuLink}>Flex8 Program</Link>
+          <Link href="/consultation" className={styles.mobileMenuLink}>1-on-1 Consultation</Link>
+          <a href="mailto:partner@cofit.me" className={styles.mobileMenuLink}>Partner with Us</a>
+          <a href="https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3" target="_blank" rel="noopener noreferrer" className={styles.mobileMenuCta}>Get Started</a>
+        </div>
+      )}
 
       {/* ── Hero ── */}
       <header className={styles.hero}>
