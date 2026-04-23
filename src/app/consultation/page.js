@@ -2,7 +2,8 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Video, Dna, Salad, MessageCircle, Instagram, Facebook, Youtube } from 'lucide-react';
+import { Video, Dna, Salad, MessageCircle } from 'lucide-react';
+import { Instagram, Facebook, Youtube } from '../components/BrandIcons';
 import styles from '../flex8/page.module.css';
 
 const EXPERTS = [

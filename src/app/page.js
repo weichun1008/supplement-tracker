@@ -3,7 +3,8 @@
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useMotionValue, useTransform, useSpring, animate, useInView } from 'framer-motion';
-import { Instagram, Facebook, Youtube, Apple, Play, Star, ArrowRight, Smartphone } from 'lucide-react';
+import { Apple, Play, Star, ArrowRight, Smartphone } from 'lucide-react';
+import { Instagram, Facebook, Youtube } from './components/BrandIcons';
 import styles from './home.module.css';
 
 function CountUp({ to, decimals = 0, suffix = '', prefix = '', duration = 1.8 }) {

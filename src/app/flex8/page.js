@@ -2,7 +2,8 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Instagram, Facebook, Youtube, Music2, MapPin, Target } from 'lucide-react';
+import { Music2, MapPin, Target } from 'lucide-react';
+import { Instagram, Facebook, Youtube } from '../components/BrandIcons';
 import styles from './page.module.css';
 
 const COFIT_LOGO = 'https://image.fevercdn.com/?bucket=picture-original.fevercdn.com&filepath=feversocial%2F35653%2F37772%2Fb705f7547aa16424ed6ddebc.png';

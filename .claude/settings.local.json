@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat vercel.json)",
+      "Bash(ls .vercel)",
+      "Bash(gh auth *)",
+      "Bash(vercel whoami *)",
+      "Bash(vercel login *)",
+      "Bash(vercel link *)",
+      "Bash(vercel project *)",
+      "Bash(gh pr *)",
+      "Bash(npm run *)",
+      "Bash(cat .env.local)",
+      "Bash(ls .env*)",
+      "Bash(vercel env *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":300\")",
+      "Bash(tasklist)",
+      "Bash(findstr node *)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(del \"C:\\\\Users\\\\user\\\\.gemini\\\\antigravity\\\\scratch\\\\supplement-tracker\\\\.claude\\\\worktrees\\\\hardcore-darwin-4fb4a2\\\\.next\\\\dev\\\\lock\")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(findstr \":3000\")",
+      "Bash(findstr \"node\")",
+      "Bash(findstr \"LISTENING\")",
+      "WebFetch(domain:events.cofit.me)",
+      "WebSearch",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:www.pexels.com)",
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(npm view *)",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => /insta|face|yout|apple|play|smart|star|arrow|map|target|video|dna|salad|message|music/i.test\\(k\\)\\).sort\\(\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); ['Instagram','Facebook','Youtube','Twitter','Linkedin'].forEach\\(n => console.log\\(n, !!l[n]\\)\\)\")"
+    ]
+  }
+}
