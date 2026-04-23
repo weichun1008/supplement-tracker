@@ -708,9 +708,6 @@ export async function findUserById(userId) {
   return rows[0] || null;
 }
 
-<<<<<<< HEAD
-// ==
-=======
 export async function getAllUsers() {
   if (isLocalMode()) {
     return memoryStore.users || [];
@@ -734,7 +731,6 @@ export async function updateUserRole(userId, newRole) {
 }
 
 // ============================================
->>>>>>> 26bdf2411e76ff7efd52e0b089d81d13ef3898a0
 // Foot Care (Bones)
 // ==
 export async function getFootAssessments(userId) {
