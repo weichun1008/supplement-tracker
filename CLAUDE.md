@@ -56,6 +56,19 @@ If dev server misbehaves after dep changes, `rm -rf .next node_modules/.cache &&
 - Don't add comments explaining *what* — only *why* (and only if non-obvious)
 - No backwards-compat shims, no dead `_vars`, no TODO breadcrumbs
 
+## Workflow — Superpowers methodology
+
+This project uses the [superpowers](https://github.com/obra/superpowers) skills framework (installed globally at `~/.claude/`). Default to these patterns:
+
+- **Non-trivial features** (anything beyond a one-line tweak): `/brainstorm` → `/write-plan` → review plan with user → `/execute-plan`. Don't jump straight to editing files.
+- **Bug fixes**: invoke `systematic-debugging` skill — reproduce, form hypothesis, verify fix, don't guess-and-check.
+- **New logic with testable behavior**: use `test-driven-development` (red → green → refactor). This is a marketing site with little test infra, so TDD mostly applies to any utility/helper code, not visual components.
+- **Before declaring done**: invoke `verification-before-completion` — confirm the thing actually works in the browser preview (per the existing "UI changes require browser verification" rule), not just that the build passes.
+- **Parallel independent work**: use `dispatching-parallel-agents` / `using-git-worktrees` skill. Worktrees already live under `.claude/worktrees/`.
+- **Code review before merge**: delegate to the `code-reviewer` agent (`Agent({ subagent_type: "code-reviewer", ... })`) for anything touching the three active marketing pages.
+
+Skills live in `~/.claude/skills/` — they self-activate when relevant; you can also call them explicitly if the situation fits.
+
 ## Environment
 
 - `.env.local` pulled from Vercel: `vercel env pull .env.local`
