@@ -446,11 +446,45 @@ export default function PartnersPage() {
 
       {/* TODO: Testimonial section — added in later tasks */}
 
-      {/* ── Footer (placeholder; replaced in Task 10) ── */}
+      {/* ── Footer ── */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
-          <span className={styles.footerLogo}><span className={styles.navLogoGreen}>cofit</span></span>
-          <span className={styles.footerCopy}>© Cofit Healthcare</span>
+          <div className={styles.footerTop}>
+            <div className={styles.footerBrand}>
+              <span className={styles.footerLogo}><span className={styles.navLogoGreen}>cofit</span></span>
+              <p className={styles.footerDesc}>Science-led nutrition for healthier daily habits. Powered by Cofit Healthcare.</p>
+              <div className={styles.footerSocials}>
+                <a href="https://www.instagram.com/hicofit" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram"><Instagram size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Facebook"><Facebook size={16} strokeWidth={1.75} /></a>
+                <a href="https://www.youtube.com/@Cofit211" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="YouTube"><Youtube size={16} strokeWidth={1.75} /></a>
+              </div>
+            </div>
+            <div className={styles.footerCol}>
+              <h5>Programs</h5>
+              <ul>
+                <li><Link href="/flex8">Flex8</Link></li>
+                <li><Link href="/consultation">1-on-1 Consultation</Link></li>
+              </ul>
+            </div>
+            <div className={styles.footerCol}>
+              <h5>Company</h5>
+              <ul>
+                <li><Link href="/partners">Partners</Link></li>
+                <li><a href="https://www.facebook.com/profile.php?id=61564521081758" target="_blank" rel="noopener noreferrer">Contact via Facebook</a></li>
+              </ul>
+            </div>
+            <div className={styles.footerCol}>
+              <h5>Get Started</h5>
+              <ul>
+                <li><Link href="/consultation">Book a session</Link></li>
+                <li><Link href="/flex8">Join Flex8</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className={styles.footerBottom}>
+            <span>© {new Date().getFullYear()} Cofit Healthcare Inc. All rights reserved.</span>
+            <span>Headquarters: Taiwan</span>
+          </div>
         </div>
       </footer>
     </div>
