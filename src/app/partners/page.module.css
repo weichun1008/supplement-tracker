@@ -90,3 +90,58 @@
 .footerInner { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; }
 .footerLogo { font-size: 18px; font-weight: 800; }
 .footerCopy { color: var(--mute); font-size: 14px; }
+
+/* ── Section shared ── */
+.sectionInner { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.sectionEyebrow {
+  display: inline-block; padding: 4px 12px; background: rgba(0,79,81,0.08); color: var(--teal);
+  border-radius: 999px; font-size: 11px; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 16px;
+}
+.sectionTitle { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 12px; }
+.sectionLead { font-size: 16px; color: var(--mute); max-width: 640px; margin: 0 0 40px; line-height: 1.6; }
+
+/* ── Why ── */
+.whySection { padding: 80px 0; }
+.whyGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.whyCard {
+  background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 28px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.whyCard:hover {
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-color: rgba(0,79,81,0.2);
+}
+.whyIcon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(0,79,81,0.08); color: var(--teal);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+}
+.whyTitle { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+.whyDesc { font-size: 14px; color: var(--mute); line-height: 1.6; margin: 0; }
+
+/* ── Types ── */
+.typesSection { padding: 60px 0 100px; background: #fff; }
+.typesGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.typeCard {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 24px;
+  text-align: left; cursor: pointer; font: inherit; color: inherit;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.typeCard:hover {
+  transform: translateY(-3px); border-color: var(--teal);
+  box-shadow: 0 8px 20px rgba(0,79,81,0.08);
+}
+.typeIcon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(0,195,0,0.1); color: var(--teal);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+}
+.typeTitle { font-size: 16px; font-weight: 700; margin: 0 0 6px; }
+.typeDesc { font-size: 13px; color: var(--mute); line-height: 1.55; margin: 0; }
+
+@media (max-width: 900px) {
+  .whyGrid, .typesGrid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .whyGrid, .typesGrid { grid-template-columns: 1fr; }
+}
