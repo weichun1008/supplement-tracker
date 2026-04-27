@@ -120,15 +120,15 @@ const SOLUTIONS = [
     title: "Extend your care with digital nutrition",
     desc: "Integrate Cofit into your clinic or care pathway. We support patient education, digital follow-up, and hybrid online-offline care models.",
     cta: "Explore Partnerships",
-    url: "mailto:partner@cofit.me",
+    url: "/partners",
     img: "https://images.pexels.com/photos/4173250/pexels-photo-4173250.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
   },
   {
     label: "For Strategic Partners",
     title: "Scalable metabolic health at population level",
     desc: "Co-develop preventive health programs, population risk reduction initiatives, and digital engagement solutions for your organization.",
-    cta: "Partner with Us",
-    url: "mailto:partner@cofit.me",
+    cta: "Explore partnerships",
+    url: "/partners",
     img: "https://images.pexels.com/photos/5256820/pexels-photo-5256820.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
   },
 ];
@@ -149,7 +149,7 @@ export default function HomePage() {
         <div className={styles.navLinks}>
           <Link href="/flex8" className={styles.navLink}>Flex8 Program</Link>
           <Link href="/consultation" className={styles.navLink}>1-on-1 Consultation</Link>
-          <a href="mailto:partner@cofit.me" className={styles.navLink}>Partner with Us</a>
+          <Link href="/partners" className={styles.navLink}>Partners</Link>
         </div>
         <div className={styles.navActions}>
           <a href="https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3" target="_blank" rel="noopener noreferrer" className={styles.btnPrimary}>Get Started</a>
@@ -169,7 +169,7 @@ export default function HomePage() {
         <div className={styles.mobileMenu} onClick={() => setMenuOpen(false)}>
           <Link href="/flex8" className={styles.mobileMenuLink}>Flex8 Program</Link>
           <Link href="/consultation" className={styles.mobileMenuLink}>1-on-1 Consultation</Link>
-          <a href="mailto:partner@cofit.me" className={styles.mobileMenuLink}>Partner with Us</a>
+          <Link href="/partners" className={styles.mobileMenuLink}>Partners</Link>
           <a href="https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3" target="_blank" rel="noopener noreferrer" className={styles.mobileMenuCta}>Get Started</a>
         </div>
       )}
@@ -188,7 +188,7 @@ export default function HomePage() {
           <p className={styles.heroBrand}>Change behavior, live better.</p>
           <div className={styles.heroCtas}>
             <Link href="/consultation" className={styles.btnPrimary}>Book a Consultation</Link>
-            <a href="mailto:partner@cofit.me" className={styles.btnSecondary}>Partner with Us →</a>
+            <Link href="/partners" className={styles.btnSecondary}>Explore partnerships →</Link>
           </div>
         </div>
         <div className={styles.heroVisual}>
@@ -443,10 +443,10 @@ export default function HomePage() {
             <span className={styles.sectionLabel}>Partnerships</span>
             <h2 className={styles.sectionTitle} style={{ textAlign: 'left' }}>Let's build better metabolic health together</h2>
             <p className={styles.partnerDesc}>
-              We welcome collaboration with clinics, hospitals, corporate wellness programs, and regional health organizations that share a commitment to prevention and sustainable behavior change.
+              From corporate wellness to creator collaborations — let's talk.
             </p>
             <p className={styles.partnerDesc}>Areas of interest: metabolic health · obesity · diabetes prevention · hypertension · nutrition education · kidney and cardiometabolic health</p>
-            <a href="mailto:partner@cofit.me" className={styles.btnPrimary} style={{ display: 'inline-block', marginTop: 24 }}>Contact Us →</a>
+            <Link href="/partners" className={styles.btnPrimary} style={{ display: 'inline-block', marginTop: 24 }}>Explore partnerships →</Link>
           </div>
           <div className={styles.partnerStats}>
             {[
@@ -486,7 +486,7 @@ export default function HomePage() {
             <div className={styles.footerCol}>
               <h5>Company</h5>
               <ul>
-                <li><a href="mailto:partner@cofit.me">Partner with Us</a></li>
+                <li><Link href="/partners">Partners</Link></li>
                 <li><a href="mailto:media@cofit.me">Media & Press</a></li>
               </ul>
             </div>
