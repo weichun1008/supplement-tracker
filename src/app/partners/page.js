@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, FlaskConical, Award, Building2, ShieldCheck, Truck, Layers, Stethoscope, Sparkles } from 'lucide-react';
+import { Users, FlaskConical, Award, Building2, ShieldCheck, Truck, Layers, Stethoscope, Sparkles, AlertCircle, Loader2, Check } from 'lucide-react';
 import { Instagram, Facebook, Youtube } from '../components/BrandIcons';
 import styles from './page.module.css';
 
@@ -19,6 +19,33 @@ export default function PartnersPage() {
   }
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    fullName: '', email: '', country: '', company: '', role: '',
+    // business
+    companySize: '', companyWebsite: '', goals: '', timeline: '',
+    // creator
+    platforms: [], handleUrl: '', followerRange: '', verticals: [], audienceMarkets: [],
+    pastCollaborations: '', preferredCollabTypes: [], notes: '',
+    // other
+    subject: '', message: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [submitState, setSubmitState] = useState('idle'); // 'idle' | 'submitting' | 'success' | 'error'
+  const [submitError, setSubmitError] = useState('');
+
+  function setField(name, value) {
+    setFormData((d) => ({ ...d, [name]: value }));
+    setErrors((e) => ({ ...e, [name]: undefined }));
+  }
+
+  function toggleMulti(name, value) {
+    setFormData((d) => {
+      const cur = d[name] || [];
+      const next = cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value];
+      return { ...d, [name]: next };
+    });
+  }
 
   return (
     <div className={styles.page}>
@@ -139,7 +166,104 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* TODO: Form, Testimonial sections — added in later tasks */}
+      {/* ── Form ── */}
+      <section ref={formRef} className={styles.formSection}>
+        <div className={styles.formInner}>
+          <div className={styles.sectionEyebrow} style={{ textAlign: 'center', display: 'block' }}>GET IN TOUCH</div>
+          <h2 className={styles.sectionTitle} style={{ textAlign: 'center' }}>Tell us about your project</h2>
+
+          {submitState === 'success' ? (
+            <SuccessCard firstName={formData.fullName.split(' ')[0]} />
+          ) : (
+            <form
+              className={styles.form}
+              onSubmit={(e) => { e.preventDefault(); /* handler added in Task 9 */ }}
+              noValidate
+            >
+              {/* honeypot — bots will fill this; humans won't see it */}
+              <input
+                type="text" tabIndex={-1} autoComplete="off"
+                name="website_url" value={formData.website_url || ''}
+                onChange={(e) => setField('website_url', e.target.value)}
+                className={styles.honeypot} aria-hidden="true"
+              />
+
+              {/* Inquiry Type pills */}
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legend}>What brings you here?<span className={styles.req}>*</span></legend>
+                <div role="radiogroup" aria-label="Inquiry type" className={styles.pillGroup}>
+                  {[
+                    { v: 'business', label: 'Business Partnership' },
+                    { v: 'creator', label: 'Creator Collaboration' },
+                    { v: 'other', label: 'Other' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      role="radio"
+                      aria-checked={inquiryType === opt.v}
+                      onClick={() => setInquiryType(opt.v)}
+                      className={`${styles.pill} ${inquiryType === opt.v ? styles.pillActive : ''}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              {/* Always-shown */}
+              <div className={styles.formGrid}>
+                <Field
+                  label="Full Name" name="fullName" required
+                  value={formData.fullName} onChange={setField} error={errors.fullName}
+                />
+                <Field
+                  label="Work Email" name="email" type="email" required
+                  value={formData.email} onChange={setField} error={errors.email}
+                  help="A work email helps us route faster, but personal email works too."
+                />
+                <Field
+                  label="Country / Region" name="country" type="select" required
+                  options={[
+                    { v: '', label: 'Select…' }, { v: 'SG', label: 'Singapore' },
+                    { v: 'US', label: 'United States' }, { v: 'TW', label: 'Taiwan' },
+                    { v: 'MY', label: 'Malaysia' }, { v: 'HK', label: 'Hong Kong' }, { v: 'OTHER', label: 'Other' },
+                  ]}
+                  value={formData.country} onChange={setField} error={errors.country}
+                />
+                <Field
+                  label={inquiryType === 'creator' ? 'Brand / Channel name' : 'Company / Brand'} name="company" required
+                  value={formData.company} onChange={setField} error={errors.company}
+                />
+                <Field
+                  label="Role / Title" name="role"
+                  value={formData.role} onChange={setField}
+                />
+              </div>
+
+              {/* TODO Task 8: conditional sections (business / creator / other) here */}
+
+              <button
+                type="submit"
+                className={styles.submitBtn}
+                disabled={submitState === 'submitting'}
+                aria-busy={submitState === 'submitting'}
+              >
+                {submitState === 'submitting' ? (
+                  <><Loader2 size={18} className={styles.spinIcon} /> Sending…</>
+                ) : (
+                  <>Send inquiry →</>
+                )}
+              </button>
+              {submitState === 'error' && (
+                <p className={styles.submitError}><AlertCircle size={16} /> {submitError || 'Something went wrong. Please email hello@cofit.me directly.'}</p>
+              )}
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* TODO: Testimonial section — added in later tasks */}
 
       {/* ── Footer (placeholder; replaced in Task 10) ── */}
       <footer className={styles.footer}>
@@ -149,5 +273,55 @@ export default function PartnersPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function Field({ label, name, type = 'text', required, value, onChange, error, help, options }) {
+  const id = `f-${name}`;
+  return (
+    <div className={styles.field}>
+      <label htmlFor={id} className={styles.fieldLabel}>
+        {label}{required && <span className={styles.req}>*</span>}
+      </label>
+      {type === 'textarea' ? (
+        <textarea
+          id={id} name={name} value={value} onChange={(e) => onChange(name, e.target.value)}
+          aria-invalid={!!error} aria-describedby={error ? `${id}-err` : help ? `${id}-help` : undefined}
+          rows={4} className={styles.fieldInput}
+        />
+      ) : type === 'select' ? (
+        <select
+          id={id} name={name} value={value} onChange={(e) => onChange(name, e.target.value)}
+          aria-invalid={!!error} className={styles.fieldInput}
+        >
+          {options?.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
+        </select>
+      ) : (
+        <input
+          id={id} type={type} name={name} value={value}
+          onChange={(e) => onChange(name, e.target.value)}
+          aria-invalid={!!error} aria-describedby={error ? `${id}-err` : help ? `${id}-help` : undefined}
+          className={styles.fieldInput}
+        />
+      )}
+      {help && !error && <small id={`${id}-help`} className={styles.fieldHelp}>{help}</small>}
+      {error && <small id={`${id}-err`} className={styles.fieldError}><AlertCircle size={12} /> {error}</small>}
+    </div>
+  );
+}
+
+function SuccessCard({ firstName }) {
+  return (
+    <motion.div
+      className={styles.successCard}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className={styles.successCheck}><Check size={28} strokeWidth={2.5} /></div>
+      <h3 className={styles.successTitle}>Thanks{firstName ? `, ${firstName}` : ''}!</h3>
+      <p className={styles.successDesc}>We received your inquiry and will get back within 2 business days.</p>
+      <Link href="/" className={styles.successLink}>Browse our programs →</Link>
+    </motion.div>
   );
 }

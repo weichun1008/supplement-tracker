@@ -145,3 +145,75 @@
 @media (max-width: 600px) {
   .whyGrid, .typesGrid { grid-template-columns: 1fr; }
 }
+
+/* ── Form ── */
+.formSection { padding: 80px 0; }
+.formInner { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+.form {
+  background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.honeypot { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+
+.fieldset { border: 0; margin: 0 0 28px; padding: 0; }
+.legend { font-size: 14px; font-weight: 700; margin-bottom: 12px; padding: 0; }
+.req { color: var(--teal); margin-left: 2px; }
+
+.pillGroup { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  flex: 1 1 auto; padding: 14px 16px; border: 1.5px solid var(--line); background: var(--bg);
+  border-radius: 12px; font: inherit; font-weight: 600; font-size: 14px; color: var(--ink);
+  cursor: pointer; transition: all 0.2s;
+}
+.pill:hover { border-color: var(--teal); }
+.pillActive {
+  border-color: var(--teal); background: rgba(0,79,81,0.06); color: var(--teal);
+}
+
+.formGrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; margin-bottom: 24px;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field:has(textarea), .field.fullWidth { grid-column: 1 / -1; }
+.fieldLabel { font-size: 13px; font-weight: 600; color: var(--ink); }
+.fieldInput {
+  padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px;
+  background: #fff; font: inherit; font-size: 14px; color: var(--ink);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.fieldInput:focus {
+  outline: none; border-color: var(--teal); transform: translateY(-1px);
+}
+.fieldHelp { font-size: 12px; color: var(--mute); }
+.fieldError { font-size: 12px; color: #DC2626; display: inline-flex; align-items: center; gap: 4px; }
+
+.submitBtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 16px 24px; background: var(--teal); color: #fff; border: 0;
+  border-radius: 12px; font: inherit; font-weight: 700; font-size: 15px; cursor: pointer;
+  margin-top: 8px; transition: transform 0.15s, background 0.15s;
+}
+.submitBtn:hover:not(:disabled) { background: #003e40; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+.spinIcon { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.submitError { display: inline-flex; gap: 6px; align-items: center; color: #DC2626; font-size: 13px; margin: 12px 0 0; }
+
+.successCard {
+  background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 56px 40px;
+  text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.successCheck {
+  width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%;
+  background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center;
+}
+.successTitle { font-size: 28px; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.02em; }
+.successDesc { color: var(--mute); margin: 0 0 24px; }
+.successLink { color: var(--teal); font-weight: 600; text-decoration: none; }
+.successLink:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .form { padding: 24px; }
+  .formGrid { grid-template-columns: 1fr; }
+  .pillGroup { flex-direction: column; }
+}
