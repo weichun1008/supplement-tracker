@@ -47,6 +47,42 @@ export default function PartnersPage() {
     });
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErrors({});
+    setSubmitError('');
+
+    const payload = buildPayload(inquiryType, partnershipType, formData);
+
+    setSubmitState('submitting');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setSubmitState('success');
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 400 && data.issues) {
+        const flat = {};
+        for (const [k, v] of Object.entries(data.issues)) flat[k] = Array.isArray(v) ? v[0] : v;
+        setErrors(flat);
+        setSubmitError('Please correct the highlighted fields.');
+      } else if (res.status === 429) {
+        setSubmitError('You just submitted — please wait 30 seconds before retrying.');
+      } else {
+        setSubmitError(data.error || 'Submission failed. Please email hello@cofit.me directly.');
+      }
+      setSubmitState('error');
+    } catch {
+      setSubmitError('Network error. Please email hello@cofit.me directly.');
+      setSubmitState('error');
+    }
+  }
+
   return (
     <div className={styles.page}>
       {/* ── Navbar (mirrors src/app/page.js structure) ── */}
@@ -177,7 +213,7 @@ export default function PartnersPage() {
           ) : (
             <form
               className={styles.form}
-              onSubmit={(e) => { e.preventDefault(); /* handler added in Task 9 */ }}
+              onSubmit={handleSubmit}
               noValidate
             >
               {/* honeypot — bots will fill this; humans won't see it */}
@@ -469,6 +505,39 @@ function SuccessCard({ firstName }) {
       <Link href="/" className={styles.successLink}>Browse our programs →</Link>
     </motion.div>
   );
+}
+
+function buildPayload(inquiryType, partnershipType, d) {
+  const base = {
+    inquiryType,
+    fullName: d.fullName, email: d.email, country: d.country, company: d.company,
+    role: d.role || undefined,
+    website_url: d.website_url || '',
+  };
+  if (inquiryType === 'business') {
+    return {
+      ...base,
+      partnershipType: partnershipType || undefined,
+      companySize: d.companySize || undefined,
+      companyWebsite: d.companyWebsite || undefined,
+      goals: d.goals,
+      timeline: d.timeline || undefined,
+    };
+  }
+  if (inquiryType === 'creator') {
+    return {
+      ...base,
+      platforms: d.platforms,
+      handleUrl: d.handleUrl,
+      followerRange: d.followerRange,
+      verticals: d.verticals,
+      audienceMarkets: d.audienceMarkets,
+      pastCollaborations: d.pastCollaborations || undefined,
+      preferredCollabTypes: d.preferredCollabTypes?.length ? d.preferredCollabTypes : undefined,
+      notes: d.notes || undefined,
+    };
+  }
+  return { ...base, subject: d.subject, message: d.message };
 }
 
 function ChipCheckbox({ name, options, value, onToggle, label, required }) {
