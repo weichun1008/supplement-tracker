@@ -86,6 +86,7 @@ export default function ConsultationPage() {
           <a href="#packages" className={styles.navLink}>Pricing</a>
           <a href="#nutritionists" className={styles.navLink}>Nutritionists</a>
           <a href="#faq" className={styles.navLink}>FAQ</a>
+          <Link href="/partners" className={styles.navLink}>Partners</Link>
         </div>
         <div className={styles.navActions}>
           <a href="https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3" target="_blank" rel="noopener noreferrer" className={styles.btnGetStarted}>Book Now</a>

@@ -117,6 +117,7 @@ export default function Flex8Page() {
           <a href="#experts" className={styles.navLink}>Nutritionists</a>
           <a href="#results" className={styles.navLink}>Results</a>
           <a href="#faq" className={styles.navLink}>FAQ</a>
+          <Link href="/partners" className={styles.navLink}>Partners</Link>
         </div>
         <div className={styles.navActions}>
           <a href="https://pro.cofit.me/administrator/registration_forms/3094/new_group_class_order?org_id=3" className={styles.btnGetStarted}>Get started</a>
