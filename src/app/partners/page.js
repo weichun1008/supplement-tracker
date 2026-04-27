@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Users, FlaskConical, Award, Building2, ShieldCheck, Truck, Layers, Stethoscope, Sparkles, AlertCircle, Loader2, Check } from 'lucide-react';
 import { Instagram, Facebook, Youtube } from '../components/BrandIcons';
 import styles from './page.module.css';
@@ -241,7 +241,152 @@ export default function PartnersPage() {
                 />
               </div>
 
-              {/* TODO Task 8: conditional sections (business / creator / other) here */}
+              <AnimatePresence mode="wait" initial={false}>
+                {inquiryType === 'business' && (
+                  <motion.div
+                    key="business"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className={styles.formGrid}>
+                      <Field
+                        label="Partnership Type" name="partnershipType" type="select" required
+                        options={[
+                          { v: '', label: 'Select…' },
+                          { v: 'corporate-wellness', label: 'Corporate Wellness' },
+                          { v: 'insurance', label: 'Insurance Partnership' },
+                          { v: 'distribution', label: 'Distribution / Reseller' },
+                          { v: 'white-label', label: 'White-label / Licensing' },
+                          { v: 'provider-referral', label: 'Healthcare Provider Referral' },
+                          { v: 'other', label: 'Other' },
+                        ]}
+                        value={partnershipType}
+                        onChange={(_, v) => setPartnershipType(v)}
+                        error={errors.partnershipType}
+                      />
+                      <Field
+                        label="Company size" name="companySize" type="select"
+                        options={[
+                          { v: '', label: 'Select…' }, { v: '<50', label: '<50' },
+                          { v: '50-500', label: '50–500' }, { v: '500-5000', label: '500–5,000' }, { v: '5000+', label: '5,000+' },
+                        ]}
+                        value={formData.companySize} onChange={setField}
+                      />
+                      <Field
+                        label="Company website" name="companyWebsite" type="url"
+                        value={formData.companyWebsite} onChange={setField}
+                      />
+                      <Field
+                        label="Timeline" name="timeline" type="select"
+                        options={[
+                          { v: '', label: 'Select…' }, { v: 'asap', label: 'ASAP' },
+                          { v: '1-3mo', label: '1–3 months' }, { v: '3-6mo', label: '3–6 months' }, { v: 'exploring', label: 'Just exploring' },
+                        ]}
+                        value={formData.timeline} onChange={setField}
+                      />
+                    </div>
+                    <Field
+                      label="Tell us about your goals" name="goals" type="textarea" required
+                      value={formData.goals} onChange={setField} error={errors.goals}
+                      help="What outcome are you hoping for? Any timeline, scope, or budget constraints? (50+ chars)"
+                    />
+                  </motion.div>
+                )}
+
+                {inquiryType === 'creator' && (
+                  <motion.div
+                    key="creator"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <ChipCheckbox
+                      name="platforms" required label="Primary Platforms"
+                      value={formData.platforms} onToggle={toggleMulti}
+                      options={[
+                        { v: 'instagram', label: 'Instagram' }, { v: 'tiktok', label: 'TikTok' },
+                        { v: 'youtube', label: 'YouTube' }, { v: 'threads', label: 'Threads' }, { v: 'other', label: 'Other' },
+                      ]}
+                    />
+                    <div className={styles.formGrid}>
+                      <Field
+                        label="Handle or Channel URL" name="handleUrl" required
+                        value={formData.handleUrl} onChange={setField}
+                        help="@username or full link"
+                      />
+                      <Field
+                        label="Follower count" name="followerRange" type="select" required
+                        options={[
+                          { v: '', label: 'Select…' }, { v: '<10K', label: 'Under 10K' },
+                          { v: '10-50K', label: '10K–50K' }, { v: '50-100K', label: '50K–100K' },
+                          { v: '100-500K', label: '100K–500K' }, { v: '500K-1M', label: '500K–1M' }, { v: '1M+', label: '1M+' },
+                        ]}
+                        value={formData.followerRange} onChange={setField}
+                      />
+                    </div>
+                    <ChipCheckbox
+                      name="verticals" required label="Content Vertical"
+                      value={formData.verticals} onToggle={toggleMulti}
+                      options={[
+                        { v: 'health', label: 'Health & Wellness' }, { v: 'fitness', label: 'Fitness' },
+                        { v: 'food', label: 'Food / Cooking' }, { v: 'parenting', label: 'Parenting' },
+                        { v: 'lifestyle', label: 'Lifestyle' }, { v: 'beauty', label: 'Beauty' }, { v: 'other', label: 'Other' },
+                      ]}
+                    />
+                    <ChipCheckbox
+                      name="audienceMarkets" required label="Primary Audience Market"
+                      value={formData.audienceMarkets} onToggle={toggleMulti}
+                      options={[
+                        { v: 'TW', label: 'Taiwan' }, { v: 'SG', label: 'Singapore' },
+                        { v: 'MY', label: 'Malaysia' }, { v: 'US', label: 'United States' },
+                        { v: 'HK', label: 'Hong Kong' }, { v: 'OTHER', label: 'Other' },
+                      ]}
+                    />
+                    <Field
+                      label="Past brand collaborations" name="pastCollaborations" type="textarea"
+                      value={formData.pastCollaborations} onChange={setField}
+                      help="Share links to past brand work if available."
+                    />
+                    <ChipCheckbox
+                      name="preferredCollabTypes" label="Preferred Collaboration Type"
+                      value={formData.preferredCollabTypes} onToggle={toggleMulti}
+                      options={[
+                        { v: 'sponsored', label: 'Sponsored content' }, { v: 'ambassador', label: 'Long-term ambassador' },
+                        { v: 'affiliate', label: 'Affiliate / revenue share' }, { v: 'co-branded', label: 'Co-branded product' }, { v: 'other', label: 'Other' },
+                      ]}
+                    />
+                    <Field
+                      label="Anything else" name="notes" type="textarea"
+                      value={formData.notes} onChange={setField}
+                    />
+                  </motion.div>
+                )}
+
+                {inquiryType === 'other' && (
+                  <motion.div
+                    key="other"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <Field
+                      label="Subject" name="subject" required
+                      value={formData.subject} onChange={setField} error={errors.subject}
+                    />
+                    <Field
+                      label="Message" name="message" type="textarea" required
+                      value={formData.message} onChange={setField} error={errors.message}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <button
                 type="submit"
@@ -323,5 +468,29 @@ function SuccessCard({ firstName }) {
       <p className={styles.successDesc}>We received your inquiry and will get back within 2 business days.</p>
       <Link href="/" className={styles.successLink}>Browse our programs →</Link>
     </motion.div>
+  );
+}
+
+function ChipCheckbox({ name, options, value, onToggle, label, required }) {
+  return (
+    <fieldset className={styles.fieldset} style={{ marginBottom: 20 }}>
+      <legend className={styles.legend}>{label}{required && <span className={styles.req}>*</span>}</legend>
+      <div className={styles.chipGroup}>
+        {options.map((opt) => {
+          const active = (value || []).includes(opt.v);
+          return (
+            <button
+              key={opt.v}
+              type="button"
+              onClick={() => onToggle(name, opt.v)}
+              aria-pressed={active}
+              className={`${styles.chip} ${active ? styles.chipActive : ''}`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }

@@ -217,3 +217,13 @@
   .formGrid { grid-template-columns: 1fr; }
   .pillGroup { flex-direction: column; }
 }
+
+.chipGroup { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 8px 14px; border: 1.5px solid var(--line); background: #fff; border-radius: 999px;
+  font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; transition: all 0.2s;
+}
+.chip:hover { border-color: var(--teal); }
+.chipActive {
+  border-color: var(--teal); background: var(--teal); color: #fff;
+}
