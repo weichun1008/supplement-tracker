@@ -17,6 +17,7 @@ Marketing site for **Cofit Healthcare**, a digital nutrition / DTx company based
 | `/` | [src/app/page.js](src/app/page.js) + [home.module.css](src/app/home.module.css) | International brand homepage (hero, proof bar, media, solutions, DTx layered-stack, nutritionists, partner CTA, footer) |
 | `/flex8` | [src/app/flex8/page.js](src/app/flex8/page.js) | 8-week Flex-Carb program landing |
 | `/consultation` | [src/app/consultation/page.js](src/app/consultation/page.js) | 1-on-1 nutritionist booking |
+| `/partners` | [src/app/partners/page.js](src/app/partners/page.js) | B2B + KOL inquiry form (Resend-backed) |
 
 External registration forms (users are redirected out — **we do not handle auth or payment**):
 - 1-on-1: `https://pro.cofit.me/administrator/registration_forms/3088/new_group_class_order?org_id=3`
