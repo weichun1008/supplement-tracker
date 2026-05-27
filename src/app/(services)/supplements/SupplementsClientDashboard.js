@@ -12,24 +12,27 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
   const { isLoading: authLoading } = useAuth();
   const { liff, isInitialized } = useLiff();
   const [supplements, setSupplements] = useState(initialSupplements);
+  const [medications, setMedications] = useState([]);
   const [checkIns, setCheckIns] = useState(initialCheckIns);
   const [streak, setStreak] = useState(initialStreak);
   const [animatingId, setAnimatingId] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [aiMatches, setAiMatches] = useState(null);
+  const [activeTab, setActiveTab] = useState('all'); // all | supplement | medication
 
   const fetchData = useCallback(async () => {
-    // We keep this function so it can refetch when users interact (check/uncheck).
     try {
-      const [supRes, ciRes, streakRes] = await Promise.all([
+      const [supRes, medRes, ciRes, streakRes] = await Promise.all([
         fetch('/api/supplements'),
+        fetch('/api/medications'),
         fetch('/api/checkins'),
         fetch('/api/checkins?type=streak'),
       ]);
 
-      if (supRes.ok && ciRes.ok && streakRes.ok) {
-        setSupplements(await supRes.json());
-        setCheckIns(await ciRes.json());
+      if (supRes.ok) setSupplements(await supRes.json());
+      if (medRes.ok) setMedications(await medRes.json());
+      if (ciRes.ok) setCheckIns(await ciRes.json());
+      if (streakRes.ok) {
         const streakData = await streakRes.json();
         setStreak(streakData.streak || 0);
       }
@@ -48,31 +51,35 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
     setStreak(initialStreak || 0);
   }, [initialSupplements, initialCheckIns, initialStreak]);
 
-  const handleCheckIn = async (supplementId) => {
-    setAnimatingId(supplementId);
+  const handleCheckIn = async (id, itemType = 'supplement') => {
+    const animKey = `${itemType}-${id}`;
+    setAnimatingId(animKey);
     try {
+      const body = itemType === 'medication'
+        ? { medicationId: id, itemType: 'medication' }
+        : { supplementId: id };
       const res = await fetch('/api/checkins', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supplementId }),
+        body: JSON.stringify(body),
       });
       if (res.ok) {
-        // We calculate if this was the last one needed to complete the day
-        const isChecked = (supId) => checkIns.some((ci) => ci.supplement_id === supId) || supId === supplementId;
-        const newCheckedCount = supplements.filter((s) => isChecked(s.id)).length;
-
-        if (newCheckedCount === supplements.length && supplements.length > 0) {
-          try {
-            await fetch('/api/notify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'daily_completed' })
-            });
-          } catch (notifyErr) {
-            console.error('Failed to trigger push notification:', notifyErr);
+        // Notify if all supplements completed
+        if (itemType === 'supplement') {
+          const isCheckedSup = (supId) => checkIns.some((ci) => ci.supplement_id === supId) || supId === id;
+          const newCheckedCount = supplements.filter((s) => isCheckedSup(s.id)).length;
+          if (newCheckedCount === supplements.length && supplements.length > 0) {
+            try {
+              await fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'daily_completed' })
+              });
+            } catch (notifyErr) {
+              console.error('Failed to trigger push notification:', notifyErr);
+            }
           }
         }
-
         await fetchData();
       }
     } catch (err) {
@@ -81,13 +88,16 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
     setTimeout(() => setAnimatingId(null), 400);
   };
 
-  const handleUncheck = async (supplementId) => {
+  const handleUncheck = async (id, itemType = 'supplement') => {
     try {
       const today = new Date().toISOString().split('T')[0];
+      const body = itemType === 'medication'
+        ? { medicationId: id, date: today, itemType: 'medication' }
+        : { supplementId: id, date: today };
       await fetch('/api/checkins', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supplementId, date: today }),
+        body: JSON.stringify(body),
       });
       await fetchData();
     } catch (err) {
@@ -123,25 +133,40 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
     return { text: t('home.greetingEvening'), emoji: '🌙' };
   };
 
-  const isChecked = (supplementId) => {
-    return checkIns.some((ci) => ci.supplement_id === supplementId);
+  const isSupChecked = (supplementId) => {
+    return checkIns.some((ci) => ci.supplement_id === supplementId && (ci.item_type === 'supplement' || !ci.item_type));
   };
 
-  const checkedCount = supplements.filter((s) => isChecked(s.id)).length;
-  const totalCount = supplements.length;
+  const isMedChecked = (medicationId) => {
+    return checkIns.some((ci) => ci.medication_id === medicationId && ci.item_type === 'medication');
+  };
+
+  const allItems = [
+    ...supplements.map((s) => ({ ...s, itemType: 'supplement', isChecked: isSupChecked(s.id) })),
+    ...medications.map((m) => ({ ...m, itemType: 'medication', isChecked: isMedChecked(m.id) })),
+  ];
+
+  const filteredItems = activeTab === 'all'
+    ? allItems
+    : allItems.filter((item) => item.itemType === activeTab);
+
+  const checkedCount = allItems.filter((item) => item.isChecked).length;
+  const totalCount = allItems.length;
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const circumference = 2 * Math.PI * 50;
   const strokeDashoffset = circumference * (1 - progress);
 
-  const groupByTime = (sups) => {
+  const groupByTime = (items) => {
     const groups = { morning: [], afternoon: [], evening: [] };
-    sups.forEach((s) => {
+    items.forEach((s) => {
       const time = s.time_of_day || 'morning';
       if (groups[time]) groups[time].push(s);
       else groups.morning.push(s);
     });
     return groups;
   };
+
+  const itemTypeIcon = (type) => type === 'medication' ? '💉' : '💊';
 
   const timeIcons = { morning: '🌅', afternoon: '☀️', evening: '🌙' };
   const timeLabels = {
@@ -165,7 +190,7 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
   }
 
   const greeting = getGreeting();
-  const grouped = groupByTime(supplements);
+  const grouped = groupByTime(filteredItems);
 
   return (
     <div className="page-container">
@@ -225,44 +250,67 @@ export default function SupplementsClientDashboard({ initialSupplements = [], in
             </div>
           </div>
 
-          {/* AI Photo Check-in Button */}
+          {/* Filter Tabs + AI Photo Button */}
           <div className="action-group">
-            <button className="btn-action primary" onClick={() => setCameraOpen(true)} style={{ flex: 1 }}>
-              📸 {t('ai.photoCheckin')}
+            <button className="btn-action primary" onClick={() => setCameraOpen(true)} style={{ flex: 'none', width: 48 }}>
+              📸
+            </button>
+            <button
+              className={`btn-action ${activeTab === 'all' ? 'primary' : ''}`}
+              onClick={() => setActiveTab('all')}
+            >
+              {t('home.tabAll')}
+            </button>
+            <button
+              className={`btn-action ${activeTab === 'supplement' ? 'primary' : ''}`}
+              onClick={() => setActiveTab('supplement')}
+            >
+              💊
+            </button>
+            <button
+              className={`btn-action ${activeTab === 'medication' ? 'primary' : ''}`}
+              onClick={() => setActiveTab('medication')}
+            >
+              💉
             </button>
           </div>
 
-          {checkedCount === totalCount && (
+          {checkedCount === totalCount && totalCount > 0 && (
             <div className="all-done-banner">{t('home.allDone')}</div>
           )}
 
-          {/* Grouped supplements */}
+          {/* Grouped items */}
           {Object.entries(grouped).map(
-            ([time, sups]) =>
-              sups.length > 0 && (
+            ([time, items]) =>
+              items.length > 0 && (
                 <div key={time} className="time-section">
                   <div className="time-section-header">
                     <span className="time-icon">{timeIcons[time]}</span>
                     <span className="time-label">{timeLabels[time]}</span>
                   </div>
-                  {sups.map((sup, idx) => {
-                    const checked = isChecked(sup.id);
+                  {items.map((item, idx) => {
+                    const animKey = `${item.itemType}-${item.id}`;
                     return (
                       <div
-                        key={sup.id}
-                        className={`checkin-card ${checked ? 'checked' : ''} slide-in`}
+                        key={animKey}
+                        className={`checkin-card ${item.isChecked ? 'checked' : ''} slide-in`}
                         style={{ animationDelay: `${idx * 0.05}s` }}
                       >
                         <div className="checkin-info">
-                          <div className="checkin-name">{sup.name}</div>
-                          {sup.dosage && <div className="checkin-dosage">{sup.dosage}</div>}
+                          <div className="checkin-name">
+                            {itemTypeIcon(item.itemType)} {item.name}
+                          </div>
+                          {item.dosage && <div className="checkin-dosage">{item.dosage}</div>}
                         </div>
                         <button
-                          className={`checkin-btn ${checked ? 'checked' : 'unchecked'} ${animatingId === sup.id ? 'check-animate' : ''
-                            }`}
-                          onClick={() => checked ? handleUncheck(sup.id) : handleCheckIn(sup.id)}
+                          className={`checkin-btn ${item.isChecked ? 'checked' : 'unchecked'} ${animatingId === animKey ? 'check-animate' : ''}`}
+                          onClick={() =>
+                            item.isChecked
+                              ? handleUncheck(item.id, item.itemType)
+                              : handleCheckIn(item.id, item.itemType)
+                          }
                         >
-                          {checked ? t('home.checkedIn') : t('home.checkIn')}
+                          {item.isChecked ? t('home.checkedIn') : t('home.checkIn')}
                         </button>
                       </div>
                     );
